@@ -1,8 +1,7 @@
 from typing import List
 
 class TestData:
-    def __init__(self, id, timestamp, parameter, value):
-        self.id = id
+    def __init__(self, timestamp: int, parameter: int, value: int):
         self.timestamp = timestamp
         self.parameter = parameter
         self.value = value
