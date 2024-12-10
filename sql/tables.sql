@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS tests (
     timestamp integer primary key,
+    ttype integer not null,
     mtype integer not null,
     reference real
 );

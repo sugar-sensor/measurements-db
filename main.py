@@ -9,18 +9,18 @@ from database import *
 
 def parse_data(data, time_diff):
     time = int(data[0]) + time_diff
-    type = int(data[1])
+    mtype = int(data[1])
     pairs = re.findall(r"\((\d+,\d+)\)", data[2])
     test_data: List[TestData] = []
     for pair in pairs:
         parsed = pair.split(',')
         test_data.append(TestData(time, int(parsed[0]), int(parsed[1])))
 
-    test = Test(time, type, 0, test_data)
+    test = Test(time, 0, mtype, 0, test_data)
     return test
 
 
-def loader(conn, filename, test_time):
+def loader(conn, filename, ttype, test_time):
 
     # Open CSV and read it line by line
     # Example data is:
@@ -39,6 +39,7 @@ def loader(conn, filename, test_time):
                 print ("invalid data: {}".format(row))
                 continue
             test = parse_data(row, time_diff)
+            test.ttype = ttype
             insert_measurement(conn, test)
             idx = idx + 1
 
@@ -46,12 +47,13 @@ def loader(conn, filename, test_time):
 if __name__ == '__main__':
     conn = None
     filename = "test.csv"
+    ttype = 0 # default test type is full-test
     test_time = datetime(2024,11,30,11,0,0) # time of the test
     print('Time:', test_time)
     try:
         conn = sqlite3.connect("measurements.sqlite")
         print(sqlite3.sqlite_version)
-        loader(conn, filename, test_time)
+        loader(conn, filename, ttype, test_time)
     except sqlite3.Error as e:
         print(e)
     finally:
