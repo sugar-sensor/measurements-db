@@ -25,3 +25,11 @@ def insert_measurement(conn, test: Test):
         cur.execute(data_sql, (data.timestamp, data.parameter, data.value))
 
     conn.commit()
+
+def insert_ref(conn, time, value):
+    """ Inserts reference data into sqlite database """
+    sql = 'INSERT INTO ref_data (timestamp, value) VALUES (?, ?)'
+    cur = conn.cursor()
+    cur.execute(sql, (time, value))
+
+    conn.commit()
