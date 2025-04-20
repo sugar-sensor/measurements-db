@@ -22,6 +22,7 @@ def parse_data(data, time_diff):
 def ref_data_loader (connection, filename):
     # Example data is:
     # ["11","2024-11-30T00:00:39","EGV","","","","iOS DexcomOne","13.4","","","","","1319474","C2RWZB"]
+
     with open(filename, mode="r", newline="") as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=',')
         for row in tqdm(csv_reader):
@@ -51,21 +52,51 @@ def test_data_loader(connection, filename, ttype, ttime):
             insert_measurement(connection, test_data)
             idx = idx + 1
 
+def parse_test_time(filename):
+    # Extract date and time parts from the filename
+    # Format: YYMMDD-HHMMSS-*.csv
+    parts = filename.split('-')
+    if len(parts) < 2:
+        # Return current datetime if format is invalid
+        return datetime.now()
+
+    date_part = parts[0]  # YYMMDD
+    time_part = parts[1]  # HHMMSS
+
+    # Parse date: YYMMDD
+    year = 2000 + int(date_part[0:2])  # Assuming 20xx for year
+    month = int(date_part[2:4])
+    day = int(date_part[4:6])
+
+    # Parse time: HHMMSS
+    hour = int(time_part[0:2])
+    minute = int(time_part[2:4])
+    second = int(time_part[4:6])
+
+    # Create and return datetime object
+    return datetime(year, month, day, hour, minute, second)
+
 # Entry point
 if __name__ == '__main__':
+    test = "241130-110000-120c.csv" # set file name to parse
+    ref = "ref.csv" # set reference file to parse, empty to Skip
+    test_time = parse_test_time(test)
+    test_type = 1 if "muff" in test else 0 # test type is "optical only" if name contains "muff", else - full-test
+
+    print('Test time:', test_time)
     conn = None
-    test = "test.csv"
-    ref = "ref.csv"
-    test_type = 0 # default test type is full-test
-    test_time = datetime(2024,11,30,11,0,0) # time of the test
-    print('Time:', test_time)
     try:
         conn = sqlite3.connect("measurements.sqlite")
-        print(sqlite3.sqlite_version)
+        print("Parsing test data and loading into database...")
         # parse test-data with ref=0
         test_data_loader(conn, test, test_type, test_time)
-        # parse ref-data and save it to separate table
-        ref_data_loader(conn, ref)
+
+        # parse ref-data and save it to separate table if any
+        if len(ref) > 0:
+            ref_data_loader(conn, ref)
+        else:
+            print("No reference file found. Skipping.")
+
     except sqlite3.Error as e:
         print(e)
     finally:
