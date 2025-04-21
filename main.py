@@ -81,6 +81,11 @@ def parse_test_time(filename):
     # Create and return datetime object
     return datetime(year, month, day, hour, minute, second)
 
+def update_refs(conn):
+    # Updates reference value in tests table from ref_data table based on timestamp
+    # TODO
+    pass
+
 # Entry point
 if __name__ == '__main__':
     test = "" # set file name to parse tests
@@ -92,9 +97,12 @@ if __name__ == '__main__':
     conn = None
     try:
         conn = sqlite3.connect("measurements.sqlite")
-        print("Parsing test data and loading into database...")
-        # parse test-data with ref=0
-        test_data_loader(conn, test, test_type, test_time)
+
+        # parse test-data with ref=0 if any
+        if len(test) > 0:
+            test_data_loader(conn, test, test_type, test_time)
+        else:
+            print("No test file found. Skipping.")
 
         # parse ref-data and save it to separate table if any
         if len(ref) > 0:
@@ -102,6 +110,8 @@ if __name__ == '__main__':
         else:
             print("No reference file found. Skipping.")
 
+        # update ref values at tests table from ref_data table
+        update_refs(conn)
     except sqlite3.Error as e:
         print(e)
     finally:

@@ -17,3 +17,6 @@ CREATE TABLE IF NOT EXISTS ref_data (
     timestamp integer not null,
     value real not null
 );
+
+CREATE INDEX IF NOT EXISTS test_data_idx on test_data (timestamp);
+CREATE UNIQUE INDEX IF NOT EXISTS ref_data_idx on ref_data (timestamp);
