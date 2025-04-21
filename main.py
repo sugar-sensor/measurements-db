@@ -27,7 +27,12 @@ def ref_data_loader (connection, filename):
         csv_reader = csv.reader(csvfile, delimiter=',')
         for row in tqdm(csv_reader):
             time = datetime.strptime(row[1], "%Y-%m-%dT%H:%M:%S")
-            ref_value = float(row[7])
+            if row[7] == "High":
+                ref_value = 23
+            elif row[7] == "Low":
+                ref_value = 2
+            else:
+                ref_value = float(row[7])
             insert_ref(connection, time.timestamp(), ref_value)
 
 
@@ -45,7 +50,7 @@ def test_data_loader(connection, filename, ttype, ttime):
                 sample_time = row[0] # start time
             time_diff = ttime.timestamp() - int(sample_time)
             if len(row) != 3:
-                print ("invalid data: {}".format(row))
+                print ("\ninvalid data: {}".format(row))
                 continue
             test_data = parse_data(row, time_diff)
             test_data.ttype = ttype
@@ -78,8 +83,8 @@ def parse_test_time(filename):
 
 # Entry point
 if __name__ == '__main__':
-    test = "241130-110000-120c.csv" # set file name to parse
-    ref = "ref.csv" # set reference file to parse, empty to Skip
+    test = "" # set file name to parse tests
+    ref = "" # set reference file to parse, empty to Skip
     test_time = parse_test_time(test)
     test_type = 1 if "muff" in test else 0 # test type is "optical only" if name contains "muff", else - full-test
 
