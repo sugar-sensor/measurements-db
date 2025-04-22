@@ -83,6 +83,12 @@ def parse_test_time(filename):
 
 def update_refs(conn):
     # Updates reference value in tests table from ref_data table based on timestamp
+    # Test data is sampled more often than reference data. We can use linear approximation
+    # to calculate test data vales by dividing difference between ref values by number of test samples
+    empty = get_empty_test(conn)
+    closest_ref = get_min_reference(conn, empty)
+    print("Min test: {}".format(empty))
+    print("Closest ref: {}".format(closest_ref))
     # TODO
     pass
 
@@ -91,9 +97,9 @@ if __name__ == '__main__':
     test = "" # set file name to parse tests
     ref = "" # set reference file to parse, empty to Skip
     test_time = parse_test_time(test)
-    test_type = 1 if "muff" in test else 0 # test type is "optical only" if name contains "muff", else - full-test
+    test_type = 1 if "muff" in test else 0 # Look Test class description
 
-    print('Test time:', test_time)
+    print("Test time:", test_time)
     conn = None
     try:
         conn = sqlite3.connect("measurements.sqlite")

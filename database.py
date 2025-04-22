@@ -33,3 +33,23 @@ def insert_ref(conn, time, value):
     cur.execute(sql, (time, value))
 
     conn.commit()
+
+def get_empty_test(conn):
+    """ Finds first test with reference = 0 and returns timestamp or 0 """
+    sql = 'SELECT min(timestamp) from tests WHERE reference = 0'
+    cur = conn.cursor()
+    cur.execute(sql)
+    result = cur.fetchone()
+
+    # Return the timestamp if found, otherwise return 0
+    return result[0] if result and result[0] is not None else 0
+
+def get_min_reference(conn, ttime):
+    """ Finds closest minimal reference value from ref_data table or 0 """
+    sql = 'SELECT max(timestamp) from ref_data WHERE timestamp <= ?'
+    cur = conn.cursor()
+    cur.execute(sql, (ttime,))  # Pass ttime as a tuple with a single element
+    result = cur.fetchone()
+
+    # Return the timestamp if found, otherwise return 0 or another default value
+    return result[0] if result and result[0] is not None else 0
