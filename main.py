@@ -81,15 +81,20 @@ def parse_test_time(filename):
     # Create and return datetime object
     return datetime(year, month, day, hour, minute, second)
 
-def update_refs(conn):
+def update_refs(db):
     # Updates reference value in tests table from ref_data table based on timestamp
     # Test data is sampled more often than reference data. We can use linear approximation
     # to calculate test data vales by dividing difference between ref values by number of test samples
-    empty = get_empty_test(conn)
-    closest_ref = get_min_reference(conn, empty)
+    empty = get_empty_test(db)
+    closest_ref = get_min_reference(db, empty)
+    next_ref = get_next_min_reference(db, closest_ref)
+    tests_num = get_tests_num(db, closest_ref, next_ref)
+
     print("Min test: {}".format(empty))
     print("Closest ref: {}".format(closest_ref))
-    # TODO
+    print("Next ref:{}".format(next_ref))
+    print("Tests num: {}".format(tests_num))
+    # TODO update cycle
     pass
 
 # Entry point

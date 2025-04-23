@@ -51,5 +51,28 @@ def get_min_reference(conn, ttime):
     cur.execute(sql, (ttime,))  # Pass ttime as a tuple with a single element
     result = cur.fetchone()
 
-    # Return the timestamp if found, otherwise return 0 or another default value
+    # Return the timestamp if found, otherwise return 0
     return result[0] if result and result[0] is not None else 0
+
+def get_next_min_reference(conn, ttime):
+    """ Finds next minimal reference value from ref_data table or 0 """
+    sql = 'select timestamp from ref_data where timestamp >= ? order by ref_data.timestamp limit 1 offset 1'
+    cur = conn.cursor()
+    cur.execute(sql, (ttime,))
+    result = cur.fetchone()
+
+    return result[0] if result and result[0] is not None else 0
+
+def get_tests_num(conn, tmin, tmax):
+    """ Return number of tests between tmin and tmax """
+    sql = 'select count(*) from tests where timestamp >= ? and timestamp <= ?'
+    cur = conn.cursor()
+    cur.execute(sql, (tmin,tmax))
+    return cur.fetchone()[0]
+
+def get_ref_value(conn, ttime):
+    """ Returns reference value by timestamp """
+    sql = 'select value from ref_data where timestamp == ?'
+    cur = conn.cursor()
+    cur.execute(sql, (ttime,))
+    return cur.fetchone()[0]
