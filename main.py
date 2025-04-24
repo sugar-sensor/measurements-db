@@ -87,14 +87,16 @@ def update_refs(db):
     # to calculate test data vales by dividing difference between ref values by number of test samples
     empty = get_empty_test(db)
     closest_ref = get_min_reference(db, empty)
-    next_ref = get_next_min_reference(db, closest_ref)
-    tests_num = get_tests_num(db, closest_ref, next_ref)
 
-    print("Min test: {}".format(empty))
-    print("Closest ref: {}".format(closest_ref))
-    print("Next ref:{}".format(next_ref))
-    print("Tests num: {}".format(tests_num))
-    # TODO update cycle
+    if empty > 0 and closest_ref > 0:
+        next_ref = get_next_min_reference(db, closest_ref)
+        tests_num = get_tests_num(db, closest_ref, next_ref) # number of tests between 2 reference points
+        diff = get_ref_value(db, closest_ref) - get_ref_value(db, next_ref)
+        k = diff / tests_num    # linear coefficient, can be negative
+        for i in range(tests_num):
+            # TODO update test value on each iteration starting from "empty" timestamp
+            print("Next ref:{}".format(next_ref))
+            print("Tests num: {}".format(tests_num))
     pass
 
 # Entry point
