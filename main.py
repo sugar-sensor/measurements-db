@@ -90,13 +90,14 @@ def update_refs(db):
 
     if empty > 0 and closest_ref > 0:
         next_ref = get_next_min_reference(db, closest_ref)
-        tests_num = get_tests_num(db, closest_ref, next_ref) # number of tests between 2 reference points
-        diff = get_ref_value(db, closest_ref) - get_ref_value(db, next_ref)
-        k = diff / tests_num    # linear coefficient, can be negative
-        for i in range(tests_num):
-            # TODO update test value on each iteration starting from "empty" timestamp
-            print("Next ref:{}".format(next_ref))
-            print("Tests num: {}".format(tests_num))
+        tests_range = get_tests_in_range(db, closest_ref, next_ref) # number of tests between 2 reference points
+        first_value = get_ref_value(db, closest_ref)
+        diff = get_ref_value(db, next_ref) - first_value
+        k = diff / len(tests_range)    # linear coefficient, can be negative
+        print("{} {} {} {}".format(closest_ref, next_ref, k, diff))
+        for i in range(len(tests_range)):
+            print("Test: {} value {}".format(tests_range[i], round(i*k + first_value, 1) ))
+            update_test_ref(db, tests_range[i], round(i*k + first_value, 1))
     pass
 
 # Entry point

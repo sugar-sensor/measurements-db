@@ -63,12 +63,12 @@ def get_next_min_reference(conn, ttime):
 
     return result[0] if result and result[0] is not None else 0
 
-def get_tests_num(conn, tmin, tmax):
+def get_tests_in_range(conn, tmin, tmax):
     """ Return number of tests between tmin and tmax """
-    sql = 'select count(*) from tests where timestamp >= ? and timestamp <= ?'
+    sql = 'select timestamp from tests where timestamp >= ? and timestamp <= ? order by timestamp'
     cur = conn.cursor()
     cur.execute(sql, (tmin,tmax))
-    return cur.fetchone()[0]
+    return [row[0] for row in cur.fetchall()]
 
 def get_ref_value(conn, ttime):
     """ Returns reference value by timestamp """
@@ -76,3 +76,11 @@ def get_ref_value(conn, ttime):
     cur = conn.cursor()
     cur.execute(sql, (ttime,))
     return cur.fetchone()[0]
+
+def update_test_ref(conn, ttime, value):
+    """ Updates test reference value by timestamp """
+    sql = 'UPDATE tests set reference = ? where timestamp = ?'
+    cur = conn.cursor()
+    cur.execute(sql, (value, ttime))
+
+    conn.commit()
