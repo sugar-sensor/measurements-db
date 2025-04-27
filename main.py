@@ -96,9 +96,11 @@ def update_refs(db):
         k = diff / len(tests_range)    # linear coefficient, can be negative
         print("{} {} {} {}".format(closest_ref, next_ref, k, diff))
         for i in range(len(tests_range)):
-            print("Test: {} value {}".format(tests_range[i], round(i*k + first_value, 1) ))
             update_test_ref(db, tests_range[i], round(i*k + first_value, 1))
-    pass
+        return 1
+    else:
+        return 0    # end of data sign
+
 
 # Entry point
 if __name__ == '__main__':
@@ -125,7 +127,11 @@ if __name__ == '__main__':
             print("No reference file found. Skipping.")
 
         # update ref values at tests table from ref_data table
-        update_refs(conn)
+        flag = 1
+        while flag == 1:
+            flag = update_refs(conn)
+        print("All tasks completed.")
+
     except sqlite3.Error as e:
         print(e)
     finally:
