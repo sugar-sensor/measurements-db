@@ -5,7 +5,7 @@ SQLite3 database for sensor measurements. Contains code to import reference data
 
 ### Tables
 
-* **tests** - contains BioZ and AFE test time and reference value. Each line is 1 test. Primary table to work with.
+* **tests** - contains BioZ and AFE test time and reference value. Each line is 1 test. `mtype` parameter has value 0 for optical test and 1 for BioZ test. Parameter `ttype` has value 0 for full test (BioZ + Optical) and 1 for Optical only (with extra muff that lifts the sensor)  
 * **test_data** - data for the tests. There are multiple results linked to 1 test. One BioZ test contains ~10 key-value pairs representing resistance on different frequencies. Optical test is ~5 key-value pairs representing AFE measurements
 * **ref_data** - reference data from invasive sensor
 
